@@ -119,6 +119,20 @@ CREATE TABLE Gruppen
     FK_GruppenKlassifizierungsgrad int NOT NULL,
     PRIMARY KEY (id),
 )
+CREATE TABLE GruppenOrientierung
+(
+    id int NOT NULL,
+    FK_GruppenOrientierungGruppen int,
+    FK_GruppenOrientierungPolitischeOrientierung int,
+    PRIMARY KEY (id),
+)
+CREATE TABLE GruppenRegion
+(
+    id int NOT NULL,
+    FK_GruppenRegionGruppen int,
+    FK_GruppenRegionRegion int,
+    PRIMARY KEY (id),
+)
 
 CREATE TABLE Mission
 (
@@ -161,6 +175,20 @@ CREATE TABLE Verdächtige
     FK_VerdächtigeKlassifizierungsgrad int NOT NULL,
     PRIMARY KEY (id),
 )
+CREATE TABLE VerdächtigeKommunikation
+(
+    id int NOT NULL,
+    FK_VerdächtigeKommunikationVerdächtige int,
+    FK_VerdächtigeKommunikationKommunikation int,
+    PRIMARY KEY (id),
+)
+CREATE TABLE VerdächtigeGruppe
+(
+    id int NOT NULL,
+    FK_VerdächtigeGruppeVerdächtige int,
+    FK_VerdächtigeGruppeGruppe int,
+    PRIMARY KEY (id),
+)
 
 CREATE TABLE Kommunikation
 (
@@ -176,6 +204,34 @@ CREATE TABLE Kommunikation
     FK_KommunikationSprache int,
     FK_KommunikationSchlüsselwort int,
     FK_KommunikationKlassifizierungsgrad int NOT NULL,
+    PRIMARY KEY (id),
+)
+CREATE TABLE KommunikationSender
+(
+    id int NOT NULL,
+    FK_KommunikationSenderKommunikation int,
+    FK_KommunikationSenderSender int,
+    PRIMARY KEY (id),
+)
+CREATE TABLE KommunikationEmpfänger
+(
+    id int NOT NULL,
+    FK_KommunikationEmpfängerKommunikation int,
+    FK_KommunikationEmpfängerEmpfänger int,
+    PRIMARY KEY (id),
+)
+CREATE TABLE KommunikationSprache
+(
+    id int NOT NULL,
+    FK_KommunikationSpracheKommunikation int,
+    FK_KommunikationSpracheSprache int,
+    PRIMARY KEY (id),
+)
+CREATE TABLE KommunikationSchlüsselwort
+(
+    id int NOT NULL,
+    FK_KommunikationSchlüsselwortKommunikation int,
+    FK_KommunikationSchlüsselwortSchlüsselwort int,
     PRIMARY KEY (id),
 )
 
@@ -250,7 +306,7 @@ CREATE TABLE Land
     PRIMARY KEY (id),
 )
 
-/* implement 1:1 relationship, ensure that FK_Klassifizierungsgrad always has the same value as in Og*/
+/* implement relationships and RIB*/
 ALTER TABLE PolitischeOrientierung ADD CONSTRAINT FK_PolitischeOrientierungKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
@@ -264,9 +320,17 @@ ON DELETE CASCADE
 ON UPDATE CASCADE
 
 ALTER TABLE Gruppen ADD CONSTRAINT FK_GruppenVerdächtigungsgrad FOREIGN KEY (id) REFERENCES Verdächtigungsgrad(id)
-ALTER TABLE Gruppen ADD CONSTRAINT FK_GruppenPolitischeOrientierung FOREIGN KEY (id) REFERENCES PolitischeOrientierung(id)
-ALTER TABLE Gruppen ADD CONSTRAINT FK_GruppenRegion FOREIGN KEY (id) REFERENCES REGION(id)
 ALTER TABLE Gruppen ADD CONSTRAINT FK_GruppenKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+
+ALTER TABLE GruppenOrientierung ADD CONSTRAINT FK_GruppenOrientierungGruppen FOREIGN KEY (id) REFERENCES Gruppen
+/*ALTER TABLE GruppenOrientierung ADD CONSTRAINT FK_GruppenOrientierungPolitischeOrientierung (id) REFERENCES PolitischeOrientierung(id) need to check this again later, no idea why it doesnt work*/
+ON DELETE CASCADE
+ON UPDATE CASCADE
+
+ALTER TABLE GruppenRegion ADD CONSTRAINT FK_GruppenRegionGruppen FOREIGN KEY (id) REFERENCES Gruppen(id)
+ALTER TABLE GruppenRegion ADD CONSTRAINT FK_GruppenRegionRegion FOREIGN KEY (id) REFERENCES Region(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
 
@@ -281,10 +345,18 @@ ON DELETE CASCADE
 ON UPDATE CASCADE
 
 ALTER TABLE Verdächtige ADD CONSTRAINT FK_VerdächtigeAufenthaltsort FOREIGN KEY (id) REFERENCES Ort(id)
-ALTER TABLE Verdächtige ADD CONSTRAINT FK_VerdächtigeKommunikation FOREIGN KEY (id) REFERENCES Kommunikation(id)
 ALTER TABLE Verdächtige ADD CONSTRAINT FK_VerdächtigeVerdächtigungsgrad FOREIGN KEY (id) REFERENCES Verdächtigungsgrad(id)
-ALTER TABLE Verdächtige ADD CONSTRAINT FK_VerdächtigeGruppen FOREIGN KEY (id) REFERENCES Gruppen(id)
 ALTER TABLE Verdächtige ADD CONSTRAINT FK_VerdächtigeKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+
+ALTER TABLE VerdächtigeKommunikation ADD CONSTRAINT FK_VerdächtigeKommunikationVerdächtige FOREIGN KEY (id) REFERENCES Verdächtige(id)
+ALTER TABLE VerdächtigeKommunikation ADD CONSTRAINT FK_VerdächtigeKommunikationKommunikation FOREIGN KEY (id) REFERENCES Kommunikation(id)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+
+ALTER TABLE VerdächtigeGruppe ADD CONSTRAINT FK_VerdächtigeGruppeVerdächtige FOREIGN KEY (id) REFERENCES Verdächtige(id)
+ALTER TABLE VerdächtigeGruppe ADD CONSTRAINT FK_VerdächtigeGruppeGruppe FOREIGN KEY (id) REFERENCES Gruppen(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
 
@@ -323,12 +395,8 @@ ON UPDATE CASCADE
 
 ALTER TABLE Kommunikation ADD CONSTRAINT FK_KommunikationKommunikationsart FOREIGN KEY (id) REFERENCES Kommunikationsart(id)
 ALTER TABLE Kommunikation ADD CONSTRAINT FK_KommunikationVerdächtigungsgrad FOREIGN KEY (id) REFERENCES Verdächtigungsgrad(id)
-ALTER TABLE Kommunikation ADD CONSTRAINT FK_KommunikationVerdächtigerSender FOREIGN KEY (id) REFERENCES Verdächtige(id)
 ALTER TABLE Kommunikation ADD CONSTRAINT FK_KommunikationOrtSender FOREIGN KEY (id) REFERENCES Ort(id)
 ALTER TABLE Kommunikation ADD CONSTRAINT FK_KommunikationVerdächtigerEmpfänger FOREIGN KEY (id) REFERENCES Verdächtige(id)
-ALTER TABLE Kommunikation ADD CONSTRAINT FK_KommunikationOrtEmpfänger FOREIGN KEY (id) REFERENCES Ort(id)
-ALTER TABLE Kommunikation ADD CONSTRAINT FK_KommunikationSprache FOREIGN KEY (id) REFERENCES Sprache(id)
-ALTER TABLE Kommunikation ADD CONSTRAINT FK_KommunikationSchlüsselwort FOREIGN KEY (id) REFERENCES Schlüsselwort(id)
 ALTER TABLE Kommunikation ADD CONSTRAINT FK_KommunikationKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
@@ -340,3 +408,13 @@ ON UPDATE CASCADE
 
 
 
+/* todo
+Zwischentabellen:
+Kommunikation:Sender n:1 KommunikationSender
+Kommunikation:Empfänger n:1 KommunikationEmpfänger
+Kommunikation:Sprache n:n KommunikationSprache
+Kommunikation:Schlüsselwörter n:n KommunikationSchlüsselwort
+
+RIBs/Cascade überprüfen ob Sinnvoll
+
+gg Bewertungsraster schauen */
