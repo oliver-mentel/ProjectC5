@@ -124,6 +124,7 @@ CREATE TABLE GruppenOrientierung
     id int NOT NULL,
     FK_GruppenOrientierungGruppen int,
     FK_GruppenOrientierungPolitischeOrientierung int,
+    FK_GruppenOrientierungKlassifizierungsgrad int NOT NULL,
     PRIMARY KEY (id),
 )
 CREATE TABLE GruppenRegion
@@ -131,6 +132,7 @@ CREATE TABLE GruppenRegion
     id int NOT NULL,
     FK_GruppenRegionGruppen int,
     FK_GruppenRegionRegion int,
+    FK_GruppenRegionKlassifizierungsgrad int NOT NULL,
     PRIMARY KEY (id),
 )
 
@@ -180,6 +182,7 @@ CREATE TABLE VerdächtigeKommunikation
     id int NOT NULL,
     FK_VerdächtigeKommunikationVerdächtige int,
     FK_VerdächtigeKommunikationKommunikation int,
+    FK_VerdächtigeKommunikationKlassifizierungsgrad int NOT NULL,
     PRIMARY KEY (id),
 )
 CREATE TABLE VerdächtigeGruppe
@@ -187,6 +190,7 @@ CREATE TABLE VerdächtigeGruppe
     id int NOT NULL,
     FK_VerdächtigeGruppeVerdächtige int,
     FK_VerdächtigeGruppeGruppe int,
+    FK_VerdächtigeGruppeKlassifizierungsgrad int NOT NULL,
     PRIMARY KEY (id),
 )
 
@@ -211,6 +215,7 @@ CREATE TABLE KommunikationSender
     id int NOT NULL,
     FK_KommunikationSenderKommunikation int,
     FK_KommunikationSenderSender int,
+    FK_KommunikationSenderKlassifizierungsgrad int NOT NULL,
     PRIMARY KEY (id),
 )
 CREATE TABLE KommunikationEmpfänger
@@ -218,6 +223,7 @@ CREATE TABLE KommunikationEmpfänger
     id int NOT NULL,
     FK_KommunikationEmpfängerKommunikation int,
     FK_KommunikationEmpfängerEmpfänger int,
+    FK_KommunikationEmpfängerKlassifizierungsgrad int NOT NULL,
     PRIMARY KEY (id),
 )
 CREATE TABLE KommunikationSprache
@@ -225,6 +231,7 @@ CREATE TABLE KommunikationSprache
     id int NOT NULL,
     FK_KommunikationSpracheKommunikation int,
     FK_KommunikationSpracheSprache int,
+    FK_KommunikationSpracheKlassifizierungsgrad int NOT NULL,
     PRIMARY KEY (id),
 )
 CREATE TABLE KommunikationSchlüsselwort
@@ -232,6 +239,7 @@ CREATE TABLE KommunikationSchlüsselwort
     id int NOT NULL,
     FK_KommunikationSchlüsselwortKommunikation int,
     FK_KommunikationSchlüsselwortSchlüsselwort int,
+    FK_KommunikationSchlüsselwortKlassifizierungsgrad int NOT NULL,
     PRIMARY KEY (id),
 )
 
@@ -324,13 +332,15 @@ ALTER TABLE Gruppen ADD CONSTRAINT FK_GruppenKlassifizierungsgrad FOREIGN KEY (i
 ON DELETE CASCADE
 ON UPDATE CASCADE
 
-ALTER TABLE GruppenOrientierung ADD CONSTRAINT FK_GruppenOrientierungGruppen FOREIGN KEY (id) REFERENCES Gruppen
+ALTER TABLE GruppenOrientierung ADD CONSTRAINT FK_GruppenOrientierungGruppen FOREIGN KEY (id) REFERENCES Gruppen(id)
 /*ALTER TABLE GruppenOrientierung ADD CONSTRAINT FK_GruppenOrientierungPolitischeOrientierung (id) REFERENCES PolitischeOrientierung(id) need to check this again later, no idea why it doesnt work*/
+ALTER TABLE GruppenOrientierung ADD CONSTRAINT FK_GruppenOrientierungKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
 
 ALTER TABLE GruppenRegion ADD CONSTRAINT FK_GruppenRegionGruppen FOREIGN KEY (id) REFERENCES Gruppen(id)
 ALTER TABLE GruppenRegion ADD CONSTRAINT FK_GruppenRegionRegion FOREIGN KEY (id) REFERENCES Region(id)
+ALTER TABLE GruppenRegion ADD CONSTRAINT FK_GruppenRegionKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
 
@@ -352,11 +362,13 @@ ON UPDATE CASCADE
 
 ALTER TABLE VerdächtigeKommunikation ADD CONSTRAINT FK_VerdächtigeKommunikationVerdächtige FOREIGN KEY (id) REFERENCES Verdächtige(id)
 ALTER TABLE VerdächtigeKommunikation ADD CONSTRAINT FK_VerdächtigeKommunikationKommunikation FOREIGN KEY (id) REFERENCES Kommunikation(id)
+ALTER TABLE VerdächtigeKommunikation ADD CONSTRAINT FK_VerdächtigeKommunikationKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
 
 ALTER TABLE VerdächtigeGruppe ADD CONSTRAINT FK_VerdächtigeGruppeVerdächtige FOREIGN KEY (id) REFERENCES Verdächtige(id)
 ALTER TABLE VerdächtigeGruppe ADD CONSTRAINT FK_VerdächtigeGruppeGruppe FOREIGN KEY (id) REFERENCES Gruppen(id)
+ALTER TABLE VerdächtigeGruppe ADD CONSTRAINT VerdächtigeGruppeKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
 
@@ -401,6 +413,30 @@ ALTER TABLE Kommunikation ADD CONSTRAINT FK_KommunikationKlassifizierungsgrad FO
 ON DELETE CASCADE
 ON UPDATE CASCADE
 
+ALTER TABLE KommunikationSender ADD CONSTRAINT FK_KommunikationSenderKommunikation FOREIGN KEY (id) REFERENCES Kommunikation(id)
+ALTER TABLE KommunikationSender ADD CONSTRAINT FK_KommunikationSenderSender FOREIGN KEY (id) REFERENCES Verdächtige(id)
+ALTER TABLE KommunikationSender ADD CONSTRAINT FK_KommunikationSenderKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+
+ALTER TABLE KommunikationEmpfänger ADD CONSTRAINT FK_KommunikationEmpfängerKommunikation FOREIGN KEY (id) REFERENCES Kommunikation(id)
+ALTER TABLE KommunikationEmpfänger ADD CONSTRAINT FK_KommunikationEmpfängerEmpfänger FOREIGN KEY (id) REFERENCES Verdächtige(id)
+ALTER TABLE KommunikationEmpfänger ADD CONSTRAINT FK_KommunikationEmpfängerKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+
+ALTER TABLE KommunikationSprache ADD CONSTRAINT FK_KommunikationSpracheKommunikation FOREIGN KEY (id) REFERENCES Kommunikation(id)
+ALTER TABLE KommunikationSprache ADD CONSTRAINT FK_KommunikationSpracheSprache FOREIGN KEY (id) REFERENCES Sprache(id)
+ALTER TABLE KommunikationSprache ADD CONSTRAINT FK_KommunikationSpracheKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+
+ALTER TABLE KommunikationSchlüsselwort ADD CONSTRAINT FK_KommunikationSchlüsselwortKommunikation FOREIGN KEY (id) REFERENCES Kommunikation(id)
+ALTER TABLE KommunikationSchlüsselwort ADD CONSTRAINT FK_KommunikationSchlüsselwortSchlüsselwort FOREIGN KEY (id) REFERENCES Kommunikation(id)
+ALTER TABLE KommunikationSchlüsselwort ADD CONSTRAINT FK_KommunikationSchlüsselwortKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+
 ALTER TABLE Kommunikationsart ADD CONSTRAINT FK_KommunikationsartKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
@@ -409,12 +445,8 @@ ON UPDATE CASCADE
 
 
 /* todo
-Zwischentabellen:
-Kommunikation:Sender n:1 KommunikationSender
-Kommunikation:Empfänger n:1 KommunikationEmpfänger
-Kommunikation:Sprache n:n KommunikationSprache
-Kommunikation:Schlüsselwörter n:n KommunikationSchlüsselwort
-
 RIBs/Cascade überprüfen ob Sinnvoll
 
-gg Bewertungsraster schauen */
+gg Bewertungsraster schauen 
+
+also check that pos in the middle thats commented out*/
