@@ -333,7 +333,7 @@ ON DELETE CASCADE
 ON UPDATE CASCADE
 
 ALTER TABLE GruppenOrientierung ADD CONSTRAINT FK_GruppenOrientierungGruppen FOREIGN KEY (id) REFERENCES Gruppen(id)
-/*ALTER TABLE GruppenOrientierung ADD CONSTRAINT FK_GruppenOrientierungPolitischeOrientierung (id) REFERENCES PolitischeOrientierung(id) need to check this again later, no idea why it doesnt work*/
+ALTER TABLE GruppenOrientierung ADD CONSTRAINT FK_GruppenOrientierungPolitischeOrientierung FOREIGN KEY (id) REFERENCES PolitischeOrientierung(id)
 ALTER TABLE GruppenOrientierung ADD CONSTRAINT FK_GruppenOrientierungKlassifizierungsgrad FOREIGN KEY (id) REFERENCES Klassifizierungsgrad(id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
@@ -446,7 +446,7 @@ ON UPDATE CASCADE
 
 /* todo
 RIBs/Cascade überprüfen ob Sinnvoll
+Insert Data
+Prepare good queries
 
-gg Bewertungsraster schauen 
-
-also check that pos in the middle thats commented out*/
+gg Bewertungsraster nochmal anschauen */
